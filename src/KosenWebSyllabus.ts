@@ -40,6 +40,7 @@ function zenkakuToHankaku(str: string): string {
     });
 }
 
+const creditRegex = /履修単位:\s*(\d+)/;
 interface RubrickRow {
     ideal: string,
     standard: string,
@@ -53,8 +54,12 @@ interface EvaluationCell {
     label: string,
     data: number,
 }
+interface EvaluationTable {
+    [index: string]: EvaluationCell[],
+}
 export class Course implements Link {
     document?: Document;
+    private id?: string;
     constructor(public name: string, public link: string) {}
     public load(): Promise<void> {
         return new Promise((resolve: () => void, reject: (err: any) => void) => {
@@ -65,6 +70,13 @@ export class Course implements Link {
             .catch(err => reject(err));
         });
     }
+    public getId(): string {
+        if(this.id === undefined) {
+            let info = this.getInformation();
+            this.id = info.college + '_' + info.department + '_' + info.course_code + '_' + info.year;
+        }
+        return this.id;
+    }
     public getName(): string {
         return this.document!.querySelector('.mcc-title-bar h1')!.textContent!.trim();
     }
@@ -72,9 +84,12 @@ export class Course implements Link {
         return this.document!.querySelector('#MainContent_SubjectSyllabus_syllabusContent > div:first-of-type')!.textContent!.trim();
     }
     public getInformation(): Dictionary {
-        let keys = ["college", "year", "course_title", "course_code", "course_category", "class_format", "credits", "department", "student_grade", "term", "classes_per_week", "textbook_and/or_teaching_materials", "instructor"];
+        let keys = ["college", "year", "course_title", "course_code", "course_category", "class_format", "credits", "department", "student_grade", "term", "classes_per_week", "textbook_and_or_teaching_materials", "instructor"];
         let values = Array.from(this.document!.querySelectorAll('#MainContent_SubjectSyllabus_UpdatePanelSyllabus > div > table:first-of-type tr > td')).map(a => a.textContent!.trim());
-        return zip(keys, values);
+        let info = zip(keys, values);
+        let credits = creditRegex.exec(info.credits);
+        info.credits = credits === null ? info.credits : credits[1];
+        return info;
     }
     public getRubrick(): RubrickRow[] {
         let rubrick: RubrickRow[] = [];
@@ -103,16 +118,19 @@ export class Course implements Link {
         let values = Array.from(this.document!.querySelectorAll('#MainContent_SubjectSyllabus_syllabusContent > div:nth-of-type(4) > div')).map(a => a.textContent!.trim());
         return zip(keys, values);
     }
-    public getEvaluationTable(): EvaluationCell[][] {
+    public getEvaluationTable(): EvaluationTable {
         let header = Array.from(this.document!.querySelectorAll('#MainContent_SubjectSyllabus_wariaiTable tr:nth-child(1) th')).map(a => a.textContent!.trim()).slice(0, -1);
         let points = Array.from(this.document!.querySelectorAll('#MainContent_SubjectSyllabus_wariaiTable td')).map((a) => a.textContent!.trim()).slice(1);
+        let rowTitle = Array.from(this.document!.querySelectorAll('#MainContent_SubjectSyllabus_wariaiTable tr:not(.bg-success) > th')).map(a => a.textContent!.trim());
         let phase = header.length + 1;
-        let table: EvaluationCell[][] = [];
+        let table: EvaluationTable = {};
         let temp: EvaluationCell[] = [];
+        let currentRow = 0;
         for(let i = 0;i < points.length;i++) {
             let index = i % phase;
             if(index == header.length) {
-                table.push(JSON.parse(JSON.stringify(temp)));
+                table[rowTitle[currentRow]] = JSON.parse(JSON.stringify(temp));
+                currentRow += 1;
                 temp = [];
             } else {
                 temp.push({ label: header[index], data: Number(zenkakuToHankaku(points[i])) });
@@ -120,10 +138,11 @@ export class Course implements Link {
         }
         return table;
     }
-    public getPlans() {
+    public getPlans(): [PlanRow[], PlanRow[]] {
         let table = this.document!.querySelector('#lessonsTable tbody')!;
         let list = Array.from(table.querySelectorAll('td')).map((a) => a.textContent!.trim());
-        let zenkiWeeks = 2 * (Array.from(table.children).indexOf(table.querySelector('th[class="bg-danger"]')!.parentElement!) - 2);
+        let kokiSeparator = table.querySelector('th[class="bg-danger"]');
+        let zenkiWeeks = kokiSeparator === null ? list.length : 2 * (Array.from(table.children).indexOf(kokiSeparator!.parentElement!) - 2);
         let temp: PlanRow = { theme: "", goals: "" };
         let plans: [PlanRow[], PlanRow[]] = [[], []];
         for(let i = 0;i < list.length;i++) {
