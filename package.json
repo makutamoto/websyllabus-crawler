@@ -1,10 +1,11 @@
 {
-  "name": "backend",
+  "name": "crawler",
   "version": "1.0.0",
   "description": "",
   "main": "./dist/index.js",
   "scripts": {
-    "start": "tsc && node ./dist/index.js"
+    "start": "tsc && node ./dist/index.js",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
