@@ -38,8 +38,8 @@ async function main() {
             for(let courseIndex = 0;courseIndex < department.links!.length;courseIndex++) {
                 let course = department.links![courseIndex];
                 console.log(`Crawling ${courseIndex + 1}/${department.links!.length} ${course.link}`);
-                // await course.load();
-                // await db.post(course, timestamp);
+                await course.load();
+                await db.post(course, timestamp);
                 await sleep(10000);
             }
             await sleep(10000);

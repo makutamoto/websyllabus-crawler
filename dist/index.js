@@ -77,7 +77,7 @@ function main() {
                     collegeIndex = 0;
                     _a.label = 3;
                 case 3:
-                    if (!(collegeIndex < home.links.length)) return [3 /*break*/, 16];
+                    if (!(collegeIndex < home.links.length)) return [3 /*break*/, 18];
                     college = home.links[collegeIndex];
                     return [4 /*yield*/, college.load()];
                 case 4:
@@ -85,7 +85,7 @@ function main() {
                     departmentIndex = 0;
                     _a.label = 5;
                 case 5:
-                    if (!(departmentIndex < college.links.length)) return [3 /*break*/, 13];
+                    if (!(departmentIndex < college.links.length)) return [3 /*break*/, 15];
                     department = college.links[departmentIndex];
                     departmentMessage = void 0;
                     return [4 /*yield*/, department.load()];
@@ -97,38 +97,40 @@ function main() {
                     courseIndex = 0;
                     _a.label = 7;
                 case 7:
-                    if (!(courseIndex < department.links.length)) return [3 /*break*/, 10];
+                    if (!(courseIndex < department.links.length)) return [3 /*break*/, 12];
                     course = department.links[courseIndex];
                     console.log("Crawling " + (courseIndex + 1) + "/" + department.links.length + " " + course.link);
-                    // await course.load();
-                    // await db.post(course, timestamp);
-                    return [4 /*yield*/, sleep(10000)];
+                    return [4 /*yield*/, course.load()];
                 case 8:
-                    // await course.load();
-                    // await db.post(course, timestamp);
                     _a.sent();
-                    _a.label = 9;
+                    return [4 /*yield*/, db.post(course, timestamp)];
                 case 9:
+                    _a.sent();
+                    return [4 /*yield*/, sleep(10000)];
+                case 10:
+                    _a.sent();
+                    _a.label = 11;
+                case 11:
                     courseIndex++;
                     return [3 /*break*/, 7];
-                case 10: return [4 /*yield*/, sleep(10000)];
-                case 11:
+                case 12: return [4 /*yield*/, sleep(10000)];
+                case 13:
                     _a.sent();
-                    _a.label = 12;
-                case 12:
+                    _a.label = 14;
+                case 14:
                     departmentIndex++;
                     return [3 /*break*/, 5];
-                case 13: return [4 /*yield*/, sleep(10000)];
-                case 14:
+                case 15: return [4 /*yield*/, sleep(10000)];
+                case 16:
                     _a.sent();
-                    _a.label = 15;
-                case 15:
+                    _a.label = 17;
+                case 17:
                     collegeIndex++;
                     return [3 /*break*/, 3];
-                case 16:
+                case 18:
                     console.log("Deleting outdated information...");
                     return [4 /*yield*/, db.deleteOutdated(timestamp)];
-                case 17:
+                case 19:
                     _a.sent();
                     postSlack("Clawing syllabus has finished.");
                     console.log("Done.");

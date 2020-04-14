@@ -55,7 +55,7 @@ export default class Database {
                 if(resolve) resolve!();
             }
         });
-        this.db.on('error', this.onError);
+        this.db.on('error', this.onError.bind(this));
     }
     public connect(): Promise<void> {
         return new Promise((resolve: () => void, reject: (err: any) => void) => this.reconnect(resolve, reject));

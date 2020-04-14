@@ -32,7 +32,7 @@ var Database = /** @class */ (function () {
                     resolve();
             }
         });
-        this.db.on('error', this.onError);
+        this.db.on('error', this.onError.bind(this));
     };
     Database.prototype.connect = function () {
         var _this = this;
