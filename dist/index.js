@@ -106,6 +106,7 @@ function main() {
                     return [4 /*yield*/, db.post(course, timestamp)];
                 case 9:
                     _a.sent();
+                    course.unload();
                     return [4 /*yield*/, sleep(10000)];
                 case 10:
                     _a.sent();
@@ -113,14 +114,18 @@ function main() {
                 case 11:
                     courseIndex++;
                     return [3 /*break*/, 7];
-                case 12: return [4 /*yield*/, sleep(10000)];
+                case 12:
+                    department.unload();
+                    return [4 /*yield*/, sleep(10000)];
                 case 13:
                     _a.sent();
                     _a.label = 14;
                 case 14:
                     departmentIndex++;
                     return [3 /*break*/, 5];
-                case 15: return [4 /*yield*/, sleep(10000)];
+                case 15:
+                    college.unload();
+                    return [4 /*yield*/, sleep(10000)];
                 case 16:
                     _a.sent();
                     _a.label = 17;
@@ -128,6 +133,7 @@ function main() {
                     collegeIndex++;
                     return [3 /*break*/, 3];
                 case 18:
+                    home.unload();
                     console.log("Deleting outdated information...");
                     return [4 /*yield*/, db.deleteOutdated(timestamp)];
                 case 19:

@@ -37,6 +37,9 @@ var LinkFetcher = /** @class */ (function () {
                 .catch(function (err) { return reject(err); });
         });
     };
+    LinkFetcher.prototype.unload = function () {
+        this.links = undefined;
+    };
     return LinkFetcher;
 }());
 function zip(keys, values) {
@@ -64,6 +67,10 @@ var Course = /** @class */ (function () {
             })
                 .catch(function (err) { return reject(err); });
         });
+    };
+    Course.prototype.unload = function () {
+        this.document = undefined;
+        this.id = undefined;
     };
     Course.prototype.getId = function () {
         if (this.id === undefined) {
