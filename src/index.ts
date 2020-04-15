@@ -40,12 +40,16 @@ async function main() {
                 console.log(`Crawling ${courseIndex + 1}/${department.links!.length} ${course.link}`);
                 await course.load();
                 await db.post(course, timestamp);
+                course.unload();
                 await sleep(10000);
             }
+            department.unload();
             await sleep(10000);
         }
+        college.unload();
         await sleep(10000);
     }
+    home.unload();
     console.log("Deleting outdated information...");
     await db.deleteOutdated(timestamp);
     postSlack("Clawing syllabus has finished.");

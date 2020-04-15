@@ -23,6 +23,9 @@ abstract class LinkFetcher<T extends Link> {
             .catch(err => reject(err));
         });
     }
+    public unload(): void {
+        this.links = undefined;
+    }
 }
 
 interface Dictionary {
@@ -69,6 +72,10 @@ export class Course implements Link {
             })
             .catch(err => reject(err));
         });
+    }
+    public unload(): void {
+        this.document = undefined;
+        this.id = undefined;
     }
     public getId(): string {
         if(this.id === undefined) {
