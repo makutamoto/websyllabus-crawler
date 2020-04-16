@@ -21,11 +21,12 @@ async function main() {
 
     let db = new Database(process.env.WSC_DB_HOST, process.env.WSC_DB_USER, process.env.WSC_DB_PASSWORD, process.env.WSC_DB_DATABASE);
     let timestamp = new Date();
+    let argIndex = Number(process.argv[2]);
     postSlack("Crawling syllabus has started.");
     await db.connect();
     let home = new Home();
     await home.load();
-    for(let collegeIndex = 0;collegeIndex < home.links!.length;collegeIndex++) {
+    for(let collegeIndex = isNaN(argIndex) ? 0 : argIndex;collegeIndex < home.links!.length;collegeIndex++) {
         let college = home.links![collegeIndex];
         await college.load();
         for(let departmentIndex = 0;departmentIndex < college.links!.length;departmentIndex++) {

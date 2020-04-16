@@ -52,7 +52,7 @@ function postSlack(text) {
 }
 function main() {
     return __awaiter(this, void 0, void 0, function () {
-        var db, timestamp, home, collegeIndex, college, departmentIndex, department, departmentMessage, courseIndex, course;
+        var db, timestamp, argIndex, home, collegeIndex, college, departmentIndex, department, departmentMessage, courseIndex, course;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -66,6 +66,7 @@ function main() {
                         throw new Error("WSC_DB_DATABASE not set.");
                     db = new Database_1.default(process.env.WSC_DB_HOST, process.env.WSC_DB_USER, process.env.WSC_DB_PASSWORD, process.env.WSC_DB_DATABASE);
                     timestamp = new Date();
+                    argIndex = Number(process.argv[2]);
                     postSlack("Crawling syllabus has started.");
                     return [4 /*yield*/, db.connect()];
                 case 1:
@@ -74,7 +75,7 @@ function main() {
                     return [4 /*yield*/, home.load()];
                 case 2:
                     _a.sent();
-                    collegeIndex = 0;
+                    collegeIndex = isNaN(argIndex) ? 0 : argIndex;
                     _a.label = 3;
                 case 3:
                     if (!(collegeIndex < home.links.length)) return [3 /*break*/, 18];
